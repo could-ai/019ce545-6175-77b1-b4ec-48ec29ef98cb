@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/tip.dart';
+import '../localization/app_localizations.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -16,18 +17,19 @@ class _SearchScreenState extends State<SearchScreen> {
     setState(() {
       query = value;
       filteredTips = Tip.sampleTips
-          .where((tip) => tip.title.toLowerCase().contains(query.toLowerCase()) ||
-                          tip.description.toLowerCase().contains(query.toLowerCase()) ||
-                          tip.category.toLowerCase().contains(query.toLowerCase()))
+          .where((tip) => tip.getTitle(context).toLowerCase().contains(query.toLowerCase()) ||
+                          tip.getDescription(context).toLowerCase().contains(query.toLowerCase()) ||
+                          tip.getCategory(context).toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Search Tips'),
+        title: Text(localizations.searchTips),
       ),
       body: Column(
         children: [
@@ -35,9 +37,9 @@ class _SearchScreenState extends State<SearchScreen> {
             padding: const EdgeInsets.all(16),
             child: TextField(
               onChanged: _search,
-              decoration: const InputDecoration(
-                labelText: 'Search by title, description, or category',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: localizations.searchPlaceholder,
+                border: const OutlineInputBorder(),
               ),
             ),
           ),
@@ -47,8 +49,8 @@ class _SearchScreenState extends State<SearchScreen> {
               itemBuilder: (context, index) {
                 final tip = filteredTips[index];
                 return ListTile(
-                  title: Text(tip.title, style: const TextStyle(color: Color(0xFF00FFFF))),
-                  subtitle: Text('${tip.category}\n${tip.description}'),
+                  title: Text(tip.getTitle(context), style: const TextStyle(color: Color(0xFF00FFFF))),
+                  subtitle: Text('${tip.getCategory(context)}\n${tip.getDescription(context)}'),
                 );
               },
             ),

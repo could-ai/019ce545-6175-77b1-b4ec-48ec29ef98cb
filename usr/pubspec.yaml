@@ -38,8 +38,13 @@ dependencies:
   # Added for card swiping functionality (Tinder-style interface)
   flutter_card_swiper: ^7.0.0
 
-  # Added for simple state management (favorites)
+  # Added for simple state management (favorites and locale)
   provider: ^6.1.2
+
+  # Added for internationalization support
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:

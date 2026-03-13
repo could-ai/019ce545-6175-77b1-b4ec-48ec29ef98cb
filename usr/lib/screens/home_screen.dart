@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import '../models/tip.dart';
 import '../widgets/skill_card.dart';
+import '../localization/app_localizations.dart';
+import '../providers/locale_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,7 +16,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final CardSwiperController controller = CardSwiperController();
   List<Tip> currentTips = [];
-  String selectedCategory = 'All';
+  String selectedCategoryKey = 'all';
   Tip? dailyTip;
   
   // We use a key to force the CardSwiper to rebuild when the list changes
@@ -33,13 +36,13 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _filterByCategory(String category) {
+  void _filterByCategory(String categoryKey) {
     setState(() {
-      selectedCategory = category;
-      if (category == 'All') {
+      selectedCategoryKey = categoryKey;
+      if (categoryKey == 'all') {
         currentTips = List.from(Tip.sampleTips);
       } else {
-        currentTips = Tip.sampleTips.where((tip) => tip.category == category).toList();
+        currentTips = Tip.sampleTips.where((tip) => tip.categoryKey == categoryKey).toList();
       }
       _swipeKey++; // Incrementing the key forces the swiper to reset with new data
     });
@@ -47,30 +50,62 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('AI Skill Booster'),
+        title: Text(localizations.appTitle),
         actions: [
+          // Language Switcher
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: DropdownButton<Locale>(
+              value: Provider.of<LocaleProvider>(context).locale,
+              dropdownColor: const Color(0xFF1E1E1E),
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+              underline: Container(),
+              icon: const Icon(Icons.language, color: Color(0xFF00FFFF)),
+              items: const [
+                DropdownMenuItem(
+                  value: Locale('en'),
+                  child: Text('English'),
+                ),
+                DropdownMenuItem(
+                  value: Locale('zh'),
+                  child: Text('中文'),
+                ),
+              ],
+              onChanged: (locale) {
+                if (locale != null) {
+                  Provider.of<LocaleProvider>(context, listen: false).setLocale(locale);
+                }
+              },
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: DropdownButton<String>(
-              value: selectedCategory,
+              value: selectedCategoryKey,
               dropdownColor: const Color(0xFF1E1E1E),
               style: const TextStyle(color: Colors.white, fontSize: 14),
               underline: Container(), // Removes the default underline
               icon: const Icon(Icons.filter_list, color: Color(0xFF00FFFF)),
-              items: ['All', 'AI Video Production', 'AI Content Writing', 'SEO/GEO Optimization', 'AI Image Design', 'Short-form Video Marketing']
-                  .map((category) => DropdownMenuItem(
-                        value: category,
-                        child: Text(
-                          category,
-                          style: TextStyle(
-                            color: selectedCategory == category ? const Color(0xFF00FFFF) : Colors.white,
-                            fontWeight: selectedCategory == category ? FontWeight.bold : FontWeight.normal,
-                          ),
-                        ),
-                      ))
-                  .toList(),
+              items: [
+                'all',
+                'aiVideoProduction',
+                'aiContentWriting',
+                'seoGeoOptimization',
+                'aiImageDesign',
+                'shortFormVideoMarketing',
+              ].map((key) => DropdownMenuItem(
+                    value: key,
+                    child: Text(
+                      localizations.translate(key),
+                      style: TextStyle(
+                        color: selectedCategoryKey == key ? const Color(0xFF00FFFF) : Colors.white,
+                        fontWeight: selectedCategoryKey == key ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
+                  )).toList(),
               onChanged: (value) {
                 if (value != null) _filterByCategory(value);
               },
@@ -86,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(16),
               color: const Color(0xFF00FFFF).withOpacity(0.1),
               child: Text(
-                '💡 Daily AI Tip: ${dailyTip!.title}',
+                localizations.dailyTip(dailyTip!.getTitle(context)),
                 style: const TextStyle(color: Color(0xFF00FFFF), fontSize: 16, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
@@ -117,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _refreshTips,
-        tooltip: 'Shuffle Tips',
+        tooltip: localizations.shuffleTips,
         child: const Icon(Icons.shuffle),
       ),
     );
