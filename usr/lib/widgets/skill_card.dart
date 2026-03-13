@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/tip.dart';
 import '../providers/favorites_provider.dart';
-import '../localization/app_localizations.dart';
 
 class SkillCard extends StatelessWidget {
   final Tip tip;
   final bool showHeart;
 
-  const SkillCard({super.key, required this.tip, this.showHeart = true);
+  const SkillCard({super.key, required this.tip, this.showHeart = true});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +22,7 @@ class SkillCard extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-        child: [
+          children: [
             Text(
               tip.getCategory(context),
               style: const TextStyle(color: Color(0xFF9D4EDD), fontSize: 14, fontWeight: FontWeight.bold),

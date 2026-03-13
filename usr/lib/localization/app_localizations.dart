@@ -1,8 +1,11 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 
 class AppLocalizations {
+  final Locale locale;
+
+  AppLocalizations(this.locale);
+
   static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
 
   static AppLocalizations? of(BuildContext context) {
@@ -56,4 +59,48 @@ class AppLocalizations {
       'aiImageDesign': 'AI 图像设计',
       'shortFormVideoMarketing': '短视频营销',
       'tip1Title': '使用 AI 进行自动编辑',
-      'tip1Desc': '利用 Runway ML 等工具从原始素材自动生成视频剪辑和转场。提示：
+      'tip1Desc': '利用 Runway ML 等工具从原始素材自动生成视频剪辑和转场。提示："使用动态转场从此素材创建一个30秒的蒙太奇。"',
+      'tip2Title': '优化提示词以提高清晰度',
+      'tip2Desc': '编写提示词时，指定语气、长度和受众。例如："以对话的语气为技术初学者写一篇关于AI伦理的500字博客文章。"',
+      'tip3Title': '整合 GEO 关键字',
+      'tip3Desc': '使用 AI 识别生成式引擎关键字。提示 ChatGPT："为关于可持续时尚的博客推荐10个经过GEO优化的关键字。"',
+      'tip4Title': 'Midjourney 构图技巧',
+      'tip4Desc': '为了在 Midjourney 中获得更好的结果，请使用带有样式的描述性提示词。例如："/imagine prompt: 赛博朋克风格的未来城市景观，高细节，霓虹灯 --ar 16:9"',
+      'tip5Title': '使用 AI 制作脚本钩子',
+      'tip5Desc': '使用 AI 生成病毒式钩子。提示："为关于AI生产力技巧的TikTok视频创建5个引人注目的钩子。"',
+      'english': 'English',
+      'chinese': '中文',
+    },
+  };
+
+  String translate(String key) {
+    return _localizedValues[locale.languageCode]?[key] ?? key;
+  }
+
+  String get appTitle => translate('appTitle');
+  String get home => translate('home');
+  String get search => translate('search');
+  String get favorites => translate('favorites');
+  String get searchTips => translate('searchTips');
+  String get searchPlaceholder => translate('searchPlaceholder');
+  String get noFavorites => translate('noFavorites');
+  String dailyTip(String tip) => translate('dailyTip').replaceAll('{tip}', tip);
+  String get shuffleTips => translate('shuffleTips');
+}
+
+class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
+  const _AppLocalizationsDelegate();
+
+  @override
+  bool isSupported(Locale locale) {
+    return ['en', 'zh'].contains(locale.languageCode);
+  }
+
+  @override
+  Future<AppLocalizations> load(Locale locale) async {
+    return AppLocalizations(locale);
+  }
+
+  @override
+  bool shouldReload(_AppLocalizationsDelegate old) => false;
+}
